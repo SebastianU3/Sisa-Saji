@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//Default Background for Gradient 
+
 BoxDecoration decorationBackgroundDefault = const BoxDecoration(
   gradient: LinearGradient(
     colors: [

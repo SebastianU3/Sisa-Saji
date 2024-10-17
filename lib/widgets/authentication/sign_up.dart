@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//TODO: Add Logic Validation and Register to Supabase
+
 class SignUp extends StatefulWidget {
   const SignUp({super.key, required this.onAuthStateChange});
 
