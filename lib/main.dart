@@ -20,9 +20,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
       theme: ThemeData().copyWith(
-          buttonTheme: ButtonThemeData().copyWith(
+          buttonTheme: const ButtonThemeData().copyWith(
               colorScheme: ColorScheme.fromSeed(
                   seedColor: Color.fromARGB(255, 255, 183, 77)))),
       home: StreamBuilder(
@@ -31,8 +32,9 @@ class MainApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const SplashScreen();
           }
-          if (snapshot.hasData) {
-            //TODO: Continue to home screen
+          if (snapshot.data?.event == AuthChangeEvent.signedIn) {
+            print(snapshot.data);
+            return const HomeScreen();
           }
           //Kalau ga dapat user (Belum Login)
           return const AuthenticationScreen();

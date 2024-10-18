@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 //TODO: Added Logic Validation and Login to Supabase
 
 class SignIn extends StatefulWidget {
@@ -15,14 +16,38 @@ class _SignInState extends State<SignIn> {
 
   bool _rememberMe = false;
   bool _obscureText = true;
+  bool _isAuthenticating = false;
 
-  void _toggleVisibility(){
+  String _emailAddress = '';
+  String _password = '';
+
+  void _toggleVisibility() {
     setState(() {
       _obscureText = !_obscureText;
     });
   }
 
-  void onSubmit() {}
+  void _onSubmit() async {
+    final isValid = _form.currentState!.validate();
+    if (!isValid) {
+      return;
+    }
+
+    _form.currentState!.save();
+
+    try {
+      setState(() {
+        _isAuthenticating = true;
+      });
+      await Supabase.instance.client.auth
+          .signInWithPassword(email: _emailAddress, password: _password);
+    } catch (err) {
+      print(err);
+    }
+    setState(() {
+      _isAuthenticating = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +77,18 @@ class _SignInState extends State<SignIn> {
               ),
               autocorrect: false,
               keyboardType: TextInputType.emailAddress,
+              validator: (value) {
+                if (value == null ||
+                    value.trim().isEmpty ||
+                    !value.contains('@') ||
+                    !value.contains('.')) {
+                  return 'Please enter a valid email address';
+                }
+                return null;
+              },
+              onSaved: (newValue) {
+                _emailAddress = newValue!;
+              },
             ),
             const SizedBox(
               //spacing
@@ -83,6 +120,17 @@ class _SignInState extends State<SignIn> {
               autocorrect: false,
               keyboardType: TextInputType.visiblePassword,
               obscureText: _obscureText,
+              validator: (value) {
+                if (value == null ||
+                    value.trim().isEmpty ||
+                    value.length <= 5) {
+                  return 'Password should be more than 5 characters';
+                }
+                return null;
+              },
+              onSaved: (newValue) {
+                _password = newValue!;
+              },
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -104,7 +152,7 @@ class _SignInState extends State<SignIn> {
             SizedBox(
               width: double.infinity,
               child: TextButton(
-                onPressed: () {},
+                onPressed: _isAuthenticating ? null : () => _onSubmit(),
                 style: TextButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 255, 183, 77),
                 ),
@@ -127,9 +175,11 @@ class _SignInState extends State<SignIn> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    widget.onAuthStateChange(false);
-                  },
+                  onTap: _isAuthenticating
+                      ? null
+                      : () {
+                          widget.onAuthStateChange(false);
+                        },
                   child: const Text(
                     'Register',
                     style: TextStyle(
