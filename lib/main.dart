@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sisa_saji/screens/home.dart';
-import 'package:sisa_saji/screens/splash.dart';
+import 'package:sisa_saji/screens/utilities/splash.dart';
 import 'package:sisa_saji/screens/user_authentication.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
